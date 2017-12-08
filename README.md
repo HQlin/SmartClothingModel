@@ -14,7 +14,11 @@ Smart-Clothing-Model
    * 答辩.ppt
    * 本科毕业论文.pdf
 * 程序界面    
-   * ![](https://github.com/HQlin/SmartClothingModel/tree/master/pic/Android应用软件搜索设备.png "Android应用软件搜索设备")
-   * ![](https://github.com/HQlin/SmartClothingModel/tree/master/pic/Android应用软件实时监测.png "Android应用软件实时监测")
-   * ![](https://github.com/HQlin/SmartClothingModel/tree/master/pic/Android应用软件历史数据可视化.png "Android应用软件历史数据可视化")
-   * ![](https://github.com/HQlin/SmartClothingModel/tree/master/pic/脉搏检测实物图.png "脉搏检测实物图")
+   * 
+   ![](https://github.com/HQlin/SmartClothingModel/blob/master/pic/Android应用软件搜索设备.png "Android应用软件搜索设备")
+   * 
+   ![](https://github.com/HQlin/SmartClothingModel/blob/master/pic/Android应用软件实时监测.png "Android应用软件实时监测")
+   * 
+   ![](https://github.com/HQlin/SmartClothingModel/blob/master/pic/Android应用软件历史数据可视化.png "Android应用软件历史数据可视化")
+   * 
+   ![](https://github.com/HQlin/SmartClothingModel/blob/master/pic/脉搏检测实物图.png "脉搏检测实物图")
