@@ -1,0 +1,146 @@
+将树莓派变成一个Web服务器：http://www.eeboard.com/bbs/thread-27383-1-1.html
+
+树莓派入门：http://www.eeboard.com/bbs/thread-5191-1-1.html
+
+树莓派指令：http://www.eeboard.com/bbs/thread-40823-1-1.html
+
+树莓派摄像头监控：http://bbs.ickey.cn/group-topic-id-14728.html
+
+①无线网络配置
+sudo nano /etc/network/interfaces
+	
+auto wlan0
+allow-hotplug wlan0
+iface wlan0 inet manual
+wpa-ssid "lin"
+wpa-psk "3112001409"
+
+②添加软件源，更新软件
+sudo nano /etc/apt/sources.list
+
+deb http://mirrordirector.raspbian.org/raspbian/ wheezy main contrib non-free rpi
+# Uncomment line below then 'apt-get update' to enable 'apt-get source'
+deb-src http://archive.raspbian.org/raspbian/ wheezy main contrib non-free rpi
+deb http://mirrors.tuna.tsinghua.edu.cn/raspbian/raspbian/ wheezy main contrib non-free rpi
+deb-src http://mirrors.tuna.tsinghua.edu.cn/raspbian/raspbian/ wheezy main contrib non-free rpi
+deb http://mirrors.neusoft.edu.cn/raspbian/raspbian/ wheezy main contrib non-free rpi
+deb-src http://mirrors.neusoft.edu.cn/raspbian/raspbian/ wheezy main contrib non-free rpi
+deb http://mirrors.ustc.edu.cn/raspbian/raspbian/ wheezy main contrib non-free rpi
+deb-src http://mirrors.ustc.edu.cn/raspbian/raspbian/ wheezy main contrib non-free rpi
+
+sudo apt-get update
+
+③nginx+php将树莓派变成一个Web服务器
+sudo apt-get install nginx
+sudo /etc/init.d/nginx start
+sudo apt-get install php5-fpm php5-sqlite
+sudo nano /etc/nginx/sites-available/default
+修改配置文件：
+1、找到listen行，将其前面的#号注释去掉，修改后内容如下
+listen 80; ## listen for ipv4.
+2、找到index行，加入index.php，修改后内容如下
+index index.php index.html index.htm
+3、找到php的定义段，将这些行的注释去掉 ，修改后内容如下
+location ~ \.php$ {
+　。。。
+}
+4、注释部分：#fastcgi_pass 127.0.0.1:9000
+5、sudo nano /etc/php5/fpm/php.ini
+修改:cgi.fix_pathinfo = 0
+6、登录root权限
+su root
+
+④关机：sudo halt
+
+⑤apache2+php5+mysql
+sudo apt-get install apache2 php5 php5-json php5-gd php5-sqlite curl libcurl3 libcurl4-openssl-dev
+sudo apt-get install php5-curl php5-gd php5-cgi php-pear php5-dev build-essential
+sudo apt-get install libpcre3-dev php5 libapache2-mod-php5 php-apc gparted
+
+sudo apt-get install mysql-server mysql-client php5-mysql 
+sudo apt-get install phpmyadmin        
+sudo nano /etc/apache2/apache2.conf  
+末尾添加：Include /etc/phpmyadmin/apache.conf
+
+⑥定时执行程序
+sudo nano ./code/job.sh
+写入：date>>/home/pi/code/1.txt
+改变权限：sudo chmod 755 job.sh
+sudo crontab -e
+设置执行时间：*/1 * * * * /home/pi/code/job.sh
+
+⑦串口软件使用
+minicom -b 9600 -o -D /dev/ttyAMA0
+
+⑧摄像头数据输出vlc
+sudo raspivid -o - -t 0 -w 640 -h 360 -fps 25|cvlc -vvv stream:///dev/stdin --sout '#standard{access=http,mux=ts,dst=:8090}' :demux=h264
+
+⑨mjpg-streamer的使用：http://m.blog.csdn.net/blog/for_wind/16842223#
+
+http://yunpan.cn/cV92d5gy27HAb  访问密码 97ac
+http://yunpan.cn/cmwKCTyGQtp3x  访问密码 a757
+
+10.SimpleCV中使用Pi Camera：
+http://www.eefocus.com/nightseas/blog/15-07/314670_e01f0.html
+http://www.alsrobot.cn/article.php?id=775
+
+11.调整时间
+sudo dpkg-reconfigure tzdata
+
+选择Asia - Congqing，简写为CST
+
+
+1、自动root用户登录
+修改/etc/inittab文件
+sudo nano /etc/inittab
+1:2345:respawn:/bin/login -f root tty1 </dev/tty1 >/dev/tty1 2>&1
+
+2、开机启动脚本
+nano /etc/init.d/blework
+
+#!/bin/bash
+# /etc/init.d/blework
+
+### BEGIN INIT INFO
+# Provides: embbnux
+# Required-Start: $remote_fs $syslog
+# Required-Stop: $remote_fs $syslog
+# Default-Start: 2 3 4 5
+# Default-Stop: 0 1 6
+# Short-Description: blework initscript
+# Description: This service is used to start blework
+### END INIT INFO
+
+case "$1" in
+    start)
+        echo "Starting blework"
+        python /home/pi/python-sql/PulseDevice.py &
+        ;;
+	stop)
+        echo "Stopping blework"
+        kill $(ps aux | grep -m 1 'python /home/pi/python-sql/PulseDevice.py' | awk '{ print $2 }')
+        ;;
+    *)
+        echo "Usage: service blework start|stop"
+        exit 1
+        ;;
+esac
+exit 0
+
+3、自动运行blework脚本
+修改/etc/inittab文件
+sudo nano /etc/rc.local
+添加执行语句：sudo service blework start
+停止：sudo service blework stop
+
+4、参考文献：
+Python MySQL：http://www.yiibai.com/python/python_mysql.html
+pyserial：https://pyserial.readthedocs.org/en/latest/shortintro.htm
+linux mysql 操作命令：http://www.cnblogs.com/xiaochaohuashengmi/archive/2011/10/18/2216279.html
+
+5、mysql数据库调试
+mysql -uroot -p
+123
+show databases;
+use py_test_db；
+select * from test;
